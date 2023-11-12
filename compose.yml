@@ -1,0 +1,39 @@
+version: '3'
+name: "survey-api-app"
+
+services:
+
+  survey_db:
+    image: postgres:16-alpine3.18
+    container_name: survey_db
+    # restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    volumes:
+      - survey_db_data:/var/lib/postgresql/data
+    ports:
+      - ${POSTGRES_PORT}:5432
+
+
+  survey_api:
+    build: .
+    image: survey_api_app
+    container_name: survey_api
+    # restart: unless-stopped
+    expose:
+      - 8000
+    ports:
+      - 8001:8000
+    volumes:
+      - ./:/simple_survey_api/
+    depends_on:
+      - survey_db
+    command: sh -c "sleep 5s && uvicorn app.main:app --reload --host 0.0.0.0 --port 8000"
+
+volumes:
+  survey_db_data:
+    
