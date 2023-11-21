@@ -6,6 +6,7 @@ from app.core.config import settings
 from contextlib import asynccontextmanager
 from app.helpers.questions import questions
 from app.helpers.services import SurveyServices
+from fastapi.middleware.cors import CORSMiddleware
 from app.core.db import initialize_db, get_db_session
 from fastapi import FastAPI, Form, UploadFile, File, Depends
 from app.database.dummy_data.populate_database import LoadDummyData
@@ -41,6 +42,17 @@ app = FastAPI(
     summary=settings.app_description,
     version=settings.app_version,
     lifespan=lifespan,
+)
+
+origins = [
+    "http://localhost:5173",
+]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 
